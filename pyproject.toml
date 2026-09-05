@@ -27,6 +27,26 @@ dependencies = [
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+packages = [
+    "apps",
+    "apps.api",
+    "apps.api.routers",
+    "apps.api.schemas",
+    "apps.scheduler",
+    "apps.worker",
+    "apps.worker.graphs",
+    "apps.worker.services",
+    "flight_domain",
+    "flight_domain.clients",
+    "flight_domain.domain",
+    "flight_domain.models",
+]
+
+[tool.setuptools.package-dir]
+"" = "."
+flight_domain = "packages/flight_domain/flight_domain"
+
 [tool.pytest.ini_options]
 minversion = "7.0"
 testpaths = ["tests"]
