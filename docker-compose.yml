@@ -1,0 +1,51 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SIGNING_SECRET=${STRIPE_WEBHOOK_SIGNING_SECRET}
+      - WORKER_URL=http://worker:8001
+      - GMAIL_SERVICE_ACCOUNT_JSON=/run/secrets/gmail-service-account.json
+      - GMAIL_SENDER_ADDRESS=${GMAIL_SENDER_ADDRESS:-bookings@yourdomain.com}
+    secrets:
+      - gmail-service-account
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: ./apps/worker/Dockerfile
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - LANGGRAPH_CHECKPOINT_DB_URI=${LANGGRAPH_CHECKPOINT_DB_URI}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - PINECONE_INDEX_HOST=${PINECONE_INDEX_HOST}
+      - LLM_API_KEY=${LLM_API_KEY}
+      - GMAIL_SERVICE_ACCOUNT_JSON=/run/secrets/gmail-service-account.json
+      - GMAIL_SENDER_ADDRESS=${GMAIL_SENDER_ADDRESS:-bookings@yourdomain.com}
+    secrets:
+      - gmail-service-account
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: ./apps/scheduler/Dockerfile
+    environment:
+      - WORKER_URL=http://worker:8001
+    depends_on:
+      - worker
+    restart: unless-stopped
+
+secrets:
+  gmail-service-account:
+    file: ./secrets/gmail-service-account.json
