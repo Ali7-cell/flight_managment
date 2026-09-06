@@ -36,6 +36,16 @@ app.include_router(waitlist_router)
 app.include_router(payments_router)
 app.include_router(policy_router)
 
+@app.get("/", tags=["System"])
+def root():
+    return {
+        "status": "online",
+        "service": api_settings.TITLE,
+        "version": api_settings.VERSION,
+        "docs": "/docs",
+        "health": "/healthz",
+    }
+
 @app.get("/healthz", tags=["System"])
 def health_check():
     return {"status": "ok", "service": "apps/api"}
