@@ -1,0 +1,88 @@
+// Prisma schema for the Skyway flight-booking backend.
+// SQLite provider. Run `bun run db:push` after editing.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Airport {
+  code     String   @id // IATA code, e.g. "JFK"
+  name     String
+  city     String
+  country  String
+  region   String   // continent / region tag for filtering
+  lat      Float
+  lng      Float
+  timezone String
+
+  // Reverse relations
+  departures Flight[] @relation("FromAirport")
+  arrivals   Flight[] @relation("ToAirport")
+}
+
+model Flight {
+  id             String   @id @default(cuid())
+  flightNumber   String   @unique // e.g. "SKY-204"
+  airline        String
+  airlineCode    String // 2-letter ICAO, e.g. "SKY"
+  fromCode       String
+  toCode         String
+  fromAirport    Airport  @relation("FromAirport", fields: [fromCode], references: [code])
+  toAirport      Airport  @relation("ToAirport", fields: [toCode], references: [code])
+  departureTime  DateTime
+  arrivalTime    DateTime
+  durationMin    Int
+  aircraft       String   // e.g. "Embraer E190"
+  totalSeats     Int
+  availableSeats Int
+  priceEconomy   Float
+  priceBusiness  Float
+  priceFirst     Float
+  status         String   @default("scheduled") // scheduled | delayed | boarding | departed | cancelled
+  gate           String?
+  createdAt       DateTime @default(now())
+
+  seats    Seat[]
+  bookings Booking[]
+}
+
+model Seat {
+  id          String  @id @default(cuid())
+  flightId    String
+  flight      Flight  @relation(fields: [flightId], references: [id], onDelete: Cascade)
+  seatNumber  String // e.g. "12A"
+  cabinClass  String // economy | business | first
+  row         Int
+  column      String // A | B | C | D | E | F
+  isAvailable Boolean @default(true)
+  price       Float
+
+  @@unique([flightId, seatNumber])
+  @@index([flightId])
+}
+
+model Booking {
+  id             String   @id @default(cuid())
+  reference      String   @unique // human-friendly, e.g. "SKY-AB12CD"
+  flightId       String
+  flight         Flight   @relation(fields: [flightId], references: [id])
+  seatNumber     String
+  cabinClass     String
+  passengerName  String
+  passengerEmail String
+  passengerPhone String?
+  totalAmount    Float
+  currency       String   @default("USD")
+  status         String   @default("confirmed") // confirmed | cancelled | completed
+  paymentMethod  String?
+  paymentStatus  String   @default("paid") // pending | paid | refunded
+  createdAt      DateTime @default(now())
+
+  @@index([flightId])
+  @@index([passengerEmail])
+}

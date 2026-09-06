@@ -1,0 +1,188 @@
+/* =====================================================================
+   JOBY AVIATION — ANIMATIONS & KEYFRAMES
+   Extracted verbatim from Joby's compiled CSS + a few helper utilities
+   that capture Joby's signature micro-interactions.
+   Import AFTER joby-theme.css.
+   ===================================================================== */
+
+/* ---- 1. Core keyframes (verbatim from Joby) ----------------------- */
+
+@keyframes joby-fadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Joby's "translate-out-in-x" trick: the element slides right and fades out,
+   then reappears from the left and fades back in. Used for headline rotation. */
+@keyframes joby-translate-out-in-x-1 {
+  0%      { opacity: 1; transform: translate(0); }
+  49.99%  { opacity: 0; transform: translate(1rem); }
+  50%     { opacity: 0; transform: translate(-1rem); }
+  100%    { opacity: 1; transform: translate(0); }
+}
+
+@keyframes joby-translate-out-in-x-2 {
+  0%      { opacity: 1; transform: translate(0); }
+  49.99%  { opacity: 0; transform: translate(2rem); }
+  50%     { opacity: 0; transform: translate(-2rem); }
+  100%    { opacity: 1; transform: translate(0); }
+}
+
+/* Joby's nav underline: wipes from right origin to scaleX(0), then
+   re-enters from left origin to scaleX(1). This is the signature. */
+@keyframes joby-underline-in-out {
+  0%      { transform-origin: 100% center; transform: scaleX(1); }
+  49.99%  { transform-origin: 100% center; transform: scaleX(0); }
+  50%     { transform-origin: 0% center;  transform: scaleX(0); }
+  100%    { transform-origin: 0% center;  transform: scaleX(1); }
+}
+
+/* ---- 2. Helper keyframes (built in Joby's style) ------------------- */
+
+/* Slow ken-burns zoom for hero imagery (Joby's hero uses this feel) */
+@keyframes joby-kenburns {
+  0%   { transform: scale(1)    translate(0, 0); }
+  100% { transform: scale(1.08) translate(-1%, -1%); }
+}
+
+/* Horizontal marquee for partner logos / news tickers */
+@keyframes joby-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Soft pulse for loading dots (only for spinners, NOT for UI chrome) */
+@keyframes joby-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+
+/* Spinner ring (for async button states) */
+@keyframes joby-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Slow float for hero plane / decorative elements */
+@keyframes joby-float {
+  0%, 100% { transform: translateY(0)    rotate(-2deg); }
+  50%      { transform: translateY(-8px) rotate(2deg); }
+}
+
+/* Drift for cloud blobs (hero background) */
+@keyframes joby-drift-1 {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(40px, -10px); }
+}
+@keyframes joby-drift-2 {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(-60px, 20px); }
+}
+@keyframes joby-drift-3 {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(30px, -15px); }
+}
+
+/* ---- 3. Utility classes ------------------------------------------- */
+
+/* Joby-style nav underline.
+   Apply to any <a> or <button> with class="nav-underline".
+   Hover triggers the wipe. */
+.nav-underline {
+  position: relative;
+}
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 100% center;
+  transition: transform var(--dur-slow) var(--ease-joby);
+}
+.nav-underline:hover::after,
+.nav-underline:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: 0% center;
+}
+
+/* Cream paper grain (very subtle radial gradients for hero backgrounds) */
+.paper-grain {
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(14, 22, 32, 0.02) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(0, 122, 229, 0.03) 0%, transparent 40%);
+}
+
+/* Marquee (set the inner content width to 200% and duplicate the list) */
+.animate-marquee {
+  animation: joby-marquee 40s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Ken-burns (apply to a hero image / gradient block) */
+.animate-kenburns {
+  animation: joby-kenburns 20s var(--ease-joby-out) forwards;
+}
+
+/* Floating hero decoration */
+.animate-float {
+  animation: joby-float 4s var(--ease-joby-in) infinite;
+}
+
+/* Drift variants for cloud blobs */
+.animate-drift-1 { animation: joby-drift-1 18s ease-in-out infinite; }
+.animate-drift-2 { animation: joby-drift-2 22s ease-in-out infinite; }
+.animate-drift-3 { animation: joby-drift-3 25s ease-in-out infinite; }
+
+/* Loading spinner ring */
+.animate-spin-joby {
+  animation: joby-spin 1s linear infinite;
+}
+
+/* Soft pulse (loading dots only) */
+.animate-pulse-joby {
+  animation: joby-pulse 1.6s ease-in-out infinite;
+}
+
+/* Thin custom scrollbar (Joby uses minimal scrollbars in dropdowns) */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(14, 22, 32, 0.2) transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(14, 22, 32, 0.2);
+  border-radius: 3px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Reduced motion: respect user preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .animate-marquee,
+  .animate-kenburns,
+  .animate-float,
+  .animate-drift-1,
+  .animate-drift-2,
+  .animate-drift-3 {
+    animation: none !important;
+  }
+  .nav-underline::after {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,79 @@
+/* =====================================================================
+   EXAMPLE globals.css for a Next.js 16 + Tailwind CSS 4 project.
+   Copy this into src/app/globals.css. It shows the EXACT import order
+   required for the Joby animation system to work.
+
+   Order is critical:
+   1. Tailwind imports (first)
+   2. joby-theme.css      (defines --color-* and --ease-joby tokens)
+   3. joby-animations.css (uses those tokens in keyframes + utilities)
+   4. joby-typography.css (uses tokens for headings)
+   5. Your project's custom @theme / @layer rules
+   ===================================================================== */
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* --- Joby design system (drop these 3 files in your /styles folder) --- */
+@import "../styles/joby-theme.css";
+@import "../styles/joby-animations.css";
+@import "../styles/joby-typography.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Bridge Joby tokens into Tailwind's color system */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-cream: var(--color-cream);
+  --color-ink: var(--color-ink);
+  --color-sky: var(--color-sky);
+  --color-deep-blue: var(--color-deep-blue);
+  --color-marine: var(--color-marine);
+  --color-sunset: var(--color-sunset);
+  --color-peach: var(--color-peach);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius-md) - 4px);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: calc(var(--radius-lg) + 4px);
+
+  /* Bind Tailwind's transition easings to Joby's curve */
+  --ease-slow: var(--ease-joby);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+    outline-color: var(--ring);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}

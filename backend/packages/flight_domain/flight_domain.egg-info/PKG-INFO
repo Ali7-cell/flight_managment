@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: flight_domain
+Version: 0.1.0
+Summary: Shared flight domain logic and models
+Requires-Python: >=3.11
+Requires-Dist: sqlalchemy>=2.0.30
+Requires-Dist: psycopg[binary]>=3.2.0
+Requires-Dist: pydantic>=2.8.0
+Requires-Dist: python-dateutil>=2.9.0

@@ -1,0 +1,114 @@
+/* =====================================================================
+   JOBY AVIATION — THEME TOKENS
+   Extracted from https://www.jobyaviation.com/ on 2026-09-06
+   Import this BEFORE joby-animations.css and BEFORE Tailwind utilities.
+   Usage in Next.js:  @import "./joby-theme.css";  in globals.css
+   ===================================================================== */
+
+:root {
+  /* ---- Color palette (verbatim from Joby) ---- */
+  --color-cream:      #F5F4DF;  /* body background, light sections */
+  --color-ink:        #0E1620;  /* text, dark sections, primary buttons */
+  --color-sky:        #007AE5;  /* Joby blue — CTAs, links on dark, accents */
+  --color-deep-blue:  #1C3F99;  /* deep section backgrounds */
+  --color-marine:     #083E6F;  /* dark navy variant */
+  --color-sunset:     #EB6110;  /* warm hover / destructive */
+  --color-peach:      #FFD9C9;  /* soft pastel accent */
+  --color-cream-soft: #EBE9D2;  /* darker cream for muted surfaces */
+  --color-ink-muted:  #5A5F4D;  /* muted text on cream */
+
+  /* ---- Easing curves (verbatim from Joby's CSS transitions) ---- */
+  --ease-joby:        cubic-bezier(0.65, 0, 0.35, 1);   /* primary in-out */
+  --ease-joby-out:    cubic-bezier(0.33, 1, 0.68, 1);   /* slight overshoot */
+  --ease-joby-in:     cubic-bezier(0.35, 0.2, 0, 1);     /* ease-in */
+
+  /* ---- Durations (verbatim from Joby) ---- */
+  --dur-fast:         0.3s;   /* color & transform micro-transitions */
+  --dur-medium:       0.45s; /* dropdowns, popover entrances */
+  --dur-slow:         0.5s;  /* hover lifts, button state changes */
+  --dur-entrance:     0.6s;  /* scroll-triggered reveals */
+  --dur-long:         0.8s;  /* hero entrance */
+  --dur-extra:        0.9s;  /* large hero/section reveals */
+
+  /* ---- Stagger delays (from Joby's staggered section reveals) ---- */
+  --stagger-1: 0.105s;
+  --stagger-2: 0.25s;
+  --stagger-3: 0.26s;
+
+  /* ---- Radii ---- */
+  --radius-pill: 9999px;        /* Joby uses 120px on 13px buttons — pill is the safer analog */
+  --radius-card: 1.5rem;        /* 24px */
+  --radius-lg:   1rem;         /* 16px */
+  --radius-md:   0.625rem;     /* 10px */
+  --radius-sm:   0.375rem;     /* 6px */
+
+  /* ---- Layout ---- */
+  --max-w: 80rem;  /* 1280px — Joby's container */
+  --nav-h: 5rem;   /* 80px desktop navbar */
+  --nav-h-mobile: 4rem;
+
+  /* ---- Shadows (subtle, editorial) ---- */
+  --shadow-card:    0 1px 2px rgba(14, 22, 32, 0.04), 0 8px 24px rgba(14, 22, 32, 0.08);
+  --shadow-hover:   0 4px 12px rgba(14, 22, 32, 0.06), 0 24px 48px rgba(14, 22, 32, 0.14);
+  --shadow-popover: 0 8px 32px rgba(14, 22, 32, 0.18);
+}
+
+/* ---- Semantic aliases (light mode = cream background) ---- */
+:root {
+  --background: var(--color-cream);
+  --foreground: var(--color-ink);
+  --card: #FFFFFF;
+  --card-foreground: var(--color-ink);
+  --popover: #FFFFFF;
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-ink);
+  --primary-foreground: var(--color-cream);
+  --secondary: var(--color-peach);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-cream-soft);
+  --muted-foreground: var(--color-ink-muted);
+  --accent: var(--color-sky);
+  --accent-foreground: #FFFFFF;
+  --destructive: var(--color-sunset);
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(14, 22, 32, 0.12);
+  --input: rgba(14, 22, 32, 0.12);
+  --ring: var(--color-sky);
+}
+
+/* ---- Dark mode (ink background) ---- */
+.dark {
+  --background: var(--color-ink);
+  --foreground: var(--color-cream);
+  --card: #1A2533;
+  --card-foreground: var(--color-cream);
+  --popover: #1A2533;
+  --popover-foreground: var(--color-cream);
+  --primary: var(--color-cream);
+  --primary-foreground: var(--color-ink);
+  --secondary: var(--color-peach);
+  --secondary-foreground: var(--color-ink);
+  --muted: #1A2533;
+  --muted-foreground: #C7C5B6;
+  --accent: var(--color-sky);
+  --accent-foreground: #FFFFFF;
+  --destructive: var(--color-sunset);
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(245, 244, 223, 0.12);
+  --input: rgba(245, 244, 223, 0.12);
+  --ring: var(--color-sky);
+}
+
+/* ---- Tailwind CSS 4 @theme bridge (optional, if using Tailwind 4) ---- */
+@theme inline {
+  --color-cream: var(--color-cream);
+  --color-ink: var(--color-ink);
+  --color-sky: var(--color-sky);
+  --color-deep-blue: var(--color-deep-blue);
+  --color-marine: var(--color-marine);
+  --color-sunset: var(--color-sunset);
+  --color-peach: var(--color-peach);
+  --ease-joby: var(--ease-joby);
+  --ease-joby-out: var(--ease-joby-out);
+  --ease-joby-in: var(--ease-joby-in);
+}

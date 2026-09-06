@@ -1,0 +1,108 @@
+/* =====================================================================
+   JOBY AVIATION — TYPOGRAPHY
+   Joby uses two custom variable fonts: jobyDisplay (headings) and
+   jobyText (body), each 100–900 weight. They are NOT free.
+   Closest free analog: Geist Sans (variable, 100–900, geometric).
+   Fallback if Geist unavailable: Inter, then system-ui.
+   Import AFTER joby-theme.css.
+   ===================================================================== */
+
+/* ---- Display utility ------------------------------------------------
+   Apply to <h1>/<h2>/<h3> or any text that should look like a Joby display heading.
+   Tight tracking + tight line-height = Joby's signature headline look. */
+.font-display {
+  font-family: var(--font-display, "Geist", "Inter", system-ui, -apple-system, sans-serif);
+  font-weight: 550;                    /* Joby uses 550 for H1/H2, 500 for H3 */
+  letter-spacing: -0.03em;              /* Joby: -1.44px on 48px → ~-3% */
+  line-height: 0.95;                     /* Joby: line-height = font-size for headlines */
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* ---- Heading scale (verbatim from Joby) ---------------------------- */
+.font-display-h1 {
+  font-size: clamp(2.5rem, 7vw, 5rem);     /* Joby: 80px hero */
+  font-weight: 550;
+  letter-spacing: -0.03em;                /* Joby: -2.4px / 80px */
+  line-height: 1.0;
+}
+
+.font-display-h2 {
+  font-size: clamp(2.25rem, 5vw, 4rem);   /* Joby: 64px section */
+  font-weight: 550;
+  letter-spacing: -0.03em;                /* Joby: -1.92px / 64px */
+  line-height: 1.0;
+}
+
+.font-display-h3 {
+  font-size: clamp(1.75rem, 3vw, 3rem);  /* Joby: 48px sub-section */
+  font-weight: 500;
+  letter-spacing: -0.03em;                /* Joby: -1.44px / 48px */
+  line-height: 1.0;
+}
+
+.font-display-mega {
+  font-size: clamp(3rem, 8vw, 5.5rem);    /* Joby: 86px mega */
+  font-weight: 500;
+  letter-spacing: -0.04em;                /* Joby: -3.52px / 86px */
+  line-height: 1.0;
+}
+
+/* Eyebrow label — Joby uses these tiny 10px uppercase labels above sections */
+.font-eyebrow {
+  font-family: var(--font-display, "Geist", "Inter", system-ui, sans-serif);
+  font-size: 0.625rem;                     /* 10px */
+  font-weight: 500;
+  letter-spacing: 0.15em;                  /* uppercase + wide tracking */
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+/* ---- Body --------------------------------------------------------- */
+.font-body {
+  font-family: var(--font-body, "Geist", "Inter", system-ui, sans-serif);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.55;
+}
+
+.font-body-lg {
+  font-family: var(--font-body, "Geist", "Inter", system-ui, sans-serif);
+  font-weight: 300;
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
+}
+
+/* ---- Buttons (Joby uses 13.33px text, weight 400, padding 8px 12px) -- */
+.font-button {
+  font-family: var(--font-body, "Geist", "Inter", system-ui, sans-serif);
+  font-size: 0.875rem;                     /* 14px (slightly larger than Joby's 13.33 for accessibility) */
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1;
+}
+
+/* ---- Tabular numerals (for prices, stats, durations) -------------- */
+.font-numeric {
+  font-family: var(--font-display, "Geist", "Inter", system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ---- Apply globally (optional — safe defaults) -------------------- */
+body {
+  font-family: var(--font-body, "Geist", "Inter", system-ui, -apple-system, sans-serif);
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display, "Geist", "Inter", system-ui, sans-serif);
+  font-weight: 550;
+  letter-spacing: -0.03em;
+  line-height: 1.0;
+}

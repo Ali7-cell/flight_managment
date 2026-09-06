@@ -1,0 +1,203 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Joby-inspired brand palette */
+  --color-cream: #F5F4DF;
+  --color-ink: #0E1620;
+  --color-sky: #007AE5;
+  --color-deep-blue: #1C3F99;
+  --color-marine: #083E6F;
+  --color-sunset: #EB6110;
+  --color-peach: #FFD9C9;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Joby-inspired easings */
+  --ease-joby: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-joby-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-joby-in: cubic-bezier(0.35, 0.2, 0, 1);
+}
+
+:root {
+  --radius: 0.625rem;
+
+  /* Joby Aviation-inspired palette */
+  --background: #F5F4DF;          /* cream */
+  --foreground: #0E1620;          /* ink */
+  --card: #FFFFFF;
+  --card-foreground: #0E1620;
+  --popover: #FFFFFF;
+  --popover-foreground: #0E1620;
+  --primary: #0E1620;             /* ink */
+  --primary-foreground: #F5F4DF;  /* cream */
+  --secondary: #FFD9C9;           /* peach */
+  --secondary-foreground: #0E1620;
+  --muted: #EBE9D2;                /* darker cream */
+  --muted-foreground: #5A5F4D;
+  --accent: #007AE5;               /* sky blue */
+  --accent-foreground: #FFFFFF;
+  --destructive: #EB6110;         /* sunset */
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(14, 22, 32, 0.12);
+  --input: rgba(14, 22, 32, 0.12);
+  --ring: #007AE5;
+  --chart-1: #007AE5;
+  --chart-2: #1C3F99;
+  --chart-3: #EB6110;
+  --chart-4: #FFD9C9;
+  --chart-5: #0E1620;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #0E1620;
+  --sidebar-primary: #0E1620;
+  --sidebar-primary-foreground: #F5F4DF;
+  --sidebar-accent: #EBE9D2;
+  --sidebar-accent-foreground: #0E1620;
+  --sidebar-border: rgba(14, 22, 32, 0.12);
+  --sidebar-ring: #007AE5;
+}
+
+.dark {
+  --background: #0E1620;          /* ink */
+  --foreground: #F5F4DF;          /* cream */
+  --card: #1A2533;
+  --card-foreground: #F5F4DF;
+  --popover: #1A2533;
+  --popover-foreground: #F5F4DF;
+  --primary: #F5F4DF;
+  --primary-foreground: #0E1620;
+  --secondary: #FFD9C9;
+  --secondary-foreground: #0E1620;
+  --muted: #1A2533;
+  --muted-foreground: #C7C5B6;
+  --accent: #007AE5;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EB6110;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(245, 244, 223, 0.12);
+  --input: rgba(245, 244, 223, 0.12);
+  --ring: #007AE5;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  /* Display heading utility — Joby-style tight tracking */
+  .font-display {
+    font-family: var(--font-geist-sans);
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+  }
+}
+
+@layer utilities {
+  /* Joby-style animated underline that wipes from right → left origin */
+  .nav-underline {
+    position: relative;
+  }
+  .nav-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: 100% center;
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .nav-underline:hover::after {
+    transform: scaleX(1);
+    transform-origin: 0% center;
+  }
+
+  /* Cream paper texture gradient for hero */
+  .paper-grain {
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(14, 22, 32, 0.02) 0%, transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(0, 122, 229, 0.03) 0%, transparent 40%);
+  }
+
+  /* Smooth marquee for partner logos */
+  @keyframes joby-marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-marquee {
+    animation: joby-marquee 40s linear infinite;
+  }
+
+  /* Slow ken-burns zoom for hero imagery */
+  @keyframes joby-kenburns {
+    0% { transform: scale(1) translate(0, 0); }
+    100% { transform: scale(1.08) translate(-1%, -1%); }
+  }
+  .animate-kenburns {
+    animation: joby-kenburns 20s ease-out forwards;
+  }
+
+  /* Custom thin scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(14, 22, 32, 0.2) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(14, 22, 32, 0.2);
+    border-radius: 3px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}

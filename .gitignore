@@ -27,3 +27,5 @@ htmlcov/
 
 # Frontend
 frontend/
+node_modules/
+.next/

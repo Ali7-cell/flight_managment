@@ -1,0 +1,23 @@
+{
+  "extraPaths": [
+    "packages/flight_domain",
+    ".",
+    "apps/worker",
+    "apps/api"
+  ],
+  "include": [
+    "apps",
+    "packages",
+    "tests"
+  ],
+  "typeCheckingMode": "standard",
+  "reportMissingImports": "none",
+  "reportAttributeAccessIssue": "none",
+  "reportGeneralTypeIssues": "none",
+  "reportArgumentType": "none",
+  "reportOptionalMemberAccess": "none",
+  "reportReturnType": "none",
+  "reportCallIssue": "none",
+  "reportOperatorIssue": "none",
+  "reportAssignmentType": "none"
+}
