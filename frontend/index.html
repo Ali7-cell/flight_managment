@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroFlow | Flight Management & Booking Engine</title>
+  <meta name="description" content="Production-grade flight management, high-concurrency seat reservation, and AI-grounded airline policy assistance.">
+  
+  <!-- Modern Typography (Google Fonts: Outfit & Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <!-- Top Application Header -->
+  <header class="app-header">
+    <div class="brand-container" onclick="App.switchTab('tab-search')">
+      <div class="brand-logo">✈</div>
+      <div>
+        <div class="brand-title">AEROFLOW</div>
+      </div>
+      <span class="brand-badge">FMS Core</span>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-links">
+      <button class="nav-tab-btn active" data-target="tab-search">
+        <span>✈</span> Search & Book
+      </button>
+      <button class="nav-tab-btn" data-target="tab-my-bookings">
+        <span>🎟</span> My Bookings
+      </button>
+      <button class="nav-tab-btn" data-target="tab-waitlist">
+        <span>📋</span> Waitlist Tracker
+      </button>
+      <button class="nav-tab-btn" data-target="tab-admin">
+        <span>⚙</span> Admin Console
+      </button>
+    </nav>
+
+    <!-- Header Right Actions -->
+    <div class="header-actions">
+      <div id="health-indicator-pill" class="system-status-indicator">
+        <span class="pulse-dot"></span> Checking API...
+      </div>
+      <button id="btn-auth-trigger" class="btn-auth-user">
+        👤 Log In / Sign Up
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-main">
+
+    <!-- Active Seat Hold 10-Minute Banner (Shown when a seat is reserved) -->
+    <div id="active-hold-banner" class="hold-alert-banner" style="display: none;">
+      <div class="hold-info-group">
+        <div id="hold-timer-display" class="hold-timer-clock">10:00</div>
+        <div>
+          <div class="hold-text-title">Seat Reserved on Hold!</div>
+          <div class="hold-text-sub">Inventory locked under PostgreSQL SELECT FOR UPDATE. Confirm before expiry.</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="BookingController.openCheckoutModal()">
+        Proceed to Checkout
+      </button>
+    </div>
+
+    <!-- TAB 1: Search & Book Flights -->
+    <section id="tab-search" class="tab-view active">
+      <div class="hero-banner">
+        <div class="hero-tag">
+          <span>⚡ High-Concurrency Distributed Reservation</span>
+        </div>
+        <h1 class="hero-title">Experience <span>Seamless Flight</span> Bookings</h1>
+        <p class="hero-subtitle">
+          Real-time inventory protection, zero overbooking invariants, and automated AI assistance.
+        </p>
+      </div>
+
+      <!-- Search Box Card -->
+      <div class="search-card">
+        <form id="flight-search-form">
+          <div class="search-grid">
+            <div class="input-group">
+              <label class="input-label" for="search-origin">
+                <span>🛫</span> Origin (IATA)
+              </label>
+              <input type="text" id="search-origin" class="input-field" placeholder="e.g. JFK" maxlength="3" value="JFK" required>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label" for="search-destination">
+                <span>🛬</span> Destination (IATA)
+              </label>
+              <input type="text" id="search-destination" class="input-field" placeholder="e.g. LHR" maxlength="3" value="LHR" required>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label" for="search-date">
+                <span>📅</span> Departure Date
+              </label>
+              <input type="date" id="search-date" class="input-field">
+            </div>
+
+            <div class="input-group" style="max-width: 140px;">
+              <label class="input-label" for="search-currency">
+                <span>💱</span> Currency
+              </label>
+              <select id="search-currency" class="select-field" style="height: 48px;">
+                <option value="USD" selected>USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="AED">AED (AED)</option>
+              </select>
+            </div>
+
+            <button type="submit" id="btn-search-flights" class="btn-primary">
+              <span>Find Flights</span> ➔
+            </button>
+          </div>
+
+          <!-- Quick Route Suggestion Chips -->
+          <div class="route-chips-row">
+            <span class="chips-label">Popular Routes:</span>
+            <button type="button" class="route-chip" data-route="JFK-LHR">JFK ➔ LHR (London)</button>
+            <button type="button" class="route-chip" data-route="DXB-LHR">DXB ➔ LHR (London)</button>
+            <button type="button" class="route-chip" data-route="KHI-DXB">KHI ➔ DXB (Dubai)</button>
+            <button type="button" class="route-chip" data-route="SFO-JFK">SFO ➔ JFK (New York)</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Flight Results List -->
+      <div id="flights-results-container">
+        <!-- Dynamically injected flight cards -->
+      </div>
+    </section>
+
+    <!-- TAB 2: My Bookings & Boarding Pass -->
+    <section id="tab-my-bookings" class="tab-view">
+      <div class="hero-banner">
+        <h2 class="hero-title">Manage <span>Your Itinerary</span></h2>
+        <p class="hero-subtitle">Retrieve your e-ticket, download digital boarding passes, or request cancellations.</p>
+      </div>
+
+      <div class="search-card" style="max-width: 600px; margin: 0 auto 2.5rem;">
+        <form id="booking-lookup-form" style="display: flex; gap: 0.75rem;">
+          <input type="text" id="lookup-pnr-input" class="input-field" placeholder="Enter Booking ID or PNR (e.g. AF9082)" required>
+          <button type="submit" class="btn-primary">Retrieve Pass</button>
+        </form>
+      </div>
+
+      <div id="boarding-pass-display-area">
+        <div style="text-align: center; color: var(--text-muted); padding: 3rem;">
+          Enter a PNR or complete a flight reservation to view your digital ticket pass.
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Priority Waitlist Tracker -->
+    <section id="tab-waitlist" class="tab-view">
+      <div class="hero-banner">
+        <h2 class="hero-title">Priority <span>Waitlist Queue</span></h2>
+        <p class="hero-subtitle">Automated seat reallocation powered by background workers upon any cancellation.</p>
+      </div>
+
+      <div class="search-card" style="max-width: 640px; margin: 0 auto;">
+        <form id="check-waitlist-form" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="input-group">
+            <label class="input-label" for="waitlist-check-flight-id">Flight ID</label>
+            <input type="text" id="waitlist-check-flight-id" class="input-field" placeholder="Enter Flight UUID" required>
+          </div>
+          <div class="input-group">
+            <label class="input-label" for="waitlist-check-entry-id">Waitlist Entry ID (Optional)</label>
+            <input type="text" id="waitlist-check-entry-id" class="input-field" placeholder="Leave blank to use logged-in user">
+          </div>
+          <button type="submit" class="btn-primary" style="align-self: flex-start;">Check Live Queue Spot</button>
+        </form>
+
+        <div id="waitlist-result-display"></div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Admin & Operations Console -->
+    <section id="tab-admin" class="tab-view">
+      <div class="hero-banner">
+        <h2 class="hero-title">Operations <span>Control Tower</span></h2>
+        <p class="hero-subtitle">Inventory management, seat capacity resizing, and LangGraph AI policy reviews.</p>
+      </div>
+
+      <!-- Admin Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem;">
+        
+        <!-- Flight Creation Wizard -->
+        <div class="admin-card">
+          <h3 class="admin-section-title">✈ Schedule New Flight</h3>
+          <form id="admin-create-flight-form" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="input-group">
+                <label class="input-label">Flight Number</label>
+                <input type="text" id="admin-flight-number" class="input-field" placeholder="AF-501" required>
+              </div>
+              <div class="input-group">
+                <label class="input-label">Origin (IATA)</label>
+                <input type="text" id="admin-origin" class="input-field" placeholder="JFK" maxlength="3" required>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="input-group">
+                <label class="input-label">Destination (IATA)</label>
+                <input type="text" id="admin-destination" class="input-field" placeholder="LHR" maxlength="3" required>
+              </div>
+              <div class="input-group">
+                <label class="input-label">Departure Local</label>
+                <input type="datetime-local" id="admin-dep-time" class="input-field" required>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Arrival Local</label>
+              <input type="datetime-local" id="admin-arr-time" class="input-field" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
+              <div class="input-group">
+                <label class="input-label">Economy Seats</label>
+                <input type="number" id="admin-eco-seats" class="input-field" value="120">
+              </div>
+              <div class="input-group">
+                <label class="input-label">Business Seats</label>
+                <input type="number" id="admin-biz-seats" class="input-field" value="24">
+              </div>
+              <div class="input-group">
+                <label class="input-label">First Seats</label>
+                <input type="number" id="admin-fst-seats" class="input-field" value="8">
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top: 0.5rem;">Create Flight Schedule</button>
+          </form>
+        </div>
+
+        <!-- Dynamic Seat Capacity Resizer -->
+        <div class="admin-card">
+          <h3 class="admin-section-title">🛡 Dynamic Seat Class Resizer</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+            Protected by database trigger <span class="code-pill">trg_seat_classes_no_shrink</span>.
+          </p>
+          <form id="admin-resize-seat-form" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="input-group">
+              <label class="input-label">Flight UUID</label>
+              <input type="text" id="admin-resize-flight-id" class="input-field" placeholder="Enter Flight UUID" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="input-group">
+                <label class="input-label">Seat Class</label>
+                <select id="admin-resize-class-name" class="select-field">
+                  <option value="economy">Economy</option>
+                  <option value="business">Business</option>
+                  <option value="first">First</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label class="input-label">New Total Seats</label>
+                <input type="number" id="admin-resize-new-total" class="input-field" placeholder="e.g. 150" required>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary">Apply Safe Capacity Resize</button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- LangGraph Pending AI Policy Approval Desk -->
+      <div class="admin-card" style="margin-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 class="admin-section-title" style="margin-bottom: 0;">🤖 AI Policy Review Desk (LangGraph Human-in-the-Loop)</h3>
+          <button id="btn-refresh-pending-policy" class="btn-secondary" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">Refresh Runs</button>
+        </div>
+        <div id="admin-pending-policy-list">
+          <p style="color: var(--text-muted);">Click 'Refresh Runs' or submit a policy query to inspect draft runs.</p>
+        </div>
+      </div>
+
+      <!-- LangGraph Pending Compensation Review Desk -->
+      <div class="admin-card" style="margin-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 class="admin-section-title" style="margin-bottom: 0;">⚖ Statutory Compensation Claims Desk</h3>
+          <button id="btn-refresh-compensations" class="btn-secondary" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">Refresh Claims</button>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Under airline policy, schedule delays &gt;3h and involuntary denied boarding qualify for statutory compensation. Super Admin sign-off is required for claims &gt; $500.
+        </p>
+        <div id="admin-compensations-list">
+          <p style="color: var(--text-muted);">Click 'Refresh Claims' to view submitted compensation claims.</p>
+        </div>
+      </div>
+
+      <!-- Audit Trail Inspector -->
+      <div class="admin-card" style="margin-top: 2rem;">
+        <h3 class="admin-section-title">📜 Immutable Audit Log Inspector</h3>
+        <form id="admin-audit-form" style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem;">
+          <input type="text" id="admin-audit-flight-id" class="input-field" placeholder="Enter Flight UUID to view change logs" required>
+          <button type="submit" class="btn-primary">Query Logs</button>
+        </form>
+
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Actor</th>
+              <th>State Diff</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody id="admin-audit-table-body">
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--text-muted);">
+                Submit a flight UUID to view immutable audit logs.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL 1: Checkout & Confirm Booking -->
+  <div id="checkout-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirm Seat Reservation</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="checkout-form">
+        <div class="modal-body">
+          <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span id="checkout-flight-badge" style="font-weight: 700; color: var(--accent-cyan); display: block;">AF-204 • ECONOMY</span>
+              <span style="font-size: 0.8rem; color: var(--text-secondary);">10-min Atomic Seat Hold Active</span>
+            </div>
+            <div id="checkout-total-price" style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">$480</div>
+          </div>
+
+          <div class="input-group" style="margin-bottom: 1rem;">
+            <label class="input-label">Passenger Full Name</label>
+            <input type="text" id="checkout-passenger-name" class="input-field" required>
+          </div>
+
+          <div class="input-group" style="margin-bottom: 1rem;">
+            <label class="input-label">Contact Email</label>
+            <input type="email" id="checkout-passenger-email" class="input-field" required>
+          </div>
+
+          <div class="input-group" style="margin-bottom: 1rem;">
+            <label class="input-label">Physical Seat Choice (Optional)</label>
+            <input type="text" id="checkout-seat-number" class="input-field" placeholder="e.g. 1A, 2B, 14C (Leave blank for automatic assignment)">
+          </div>
+
+          <div class="input-group" style="margin-bottom: 1rem;">
+            <label class="input-label">Simulated Stripe Payment Method</label>
+            <input type="text" class="input-field" value="pm_card_visa (Test Card)" disabled>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary modal-close-btn">Cancel</button>
+          <button type="submit" id="btn-confirm-checkout" class="btn-primary">Pay & Issue Ticket</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Waitlist Join Modal -->
+  <div id="waitlist-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Join Priority Waitlist</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="waitlist-form">
+        <div class="modal-body">
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+            This flight class is currently at maximum capacity. Join the waitlist queue to automatically secure a seat upon cancellation.
+          </p>
+
+          <div style="font-weight: 700; color: var(--accent-amber); margin-bottom: 1rem;" id="waitlist-flight-title">
+            AF-204 • FIRST CLASS
+          </div>
+
+          <div class="input-group" style="margin-bottom: 1rem;">
+            <label class="input-label">Full Name</label>
+            <input type="text" id="waitlist-passenger-name" class="input-field" placeholder="Muhammad Ali" required>
+          </div>
+
+          <div class="input-group" style="margin-bottom: 1rem;">
+            <label class="input-label">Notification Email</label>
+            <input type="email" id="waitlist-passenger-email" class="input-field" placeholder="ali@example.com" required>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">Seats Needed</label>
+            <input type="number" id="waitlist-quantity" class="input-field" value="1" min="1" max="4">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary modal-close-btn">Cancel</button>
+          <button type="submit" class="btn-primary">Confirm Join Queue</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Authentication Modal -->
+  <div id="auth-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="auth-modal-title" class="modal-title">Log In to AeroFlow</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="auth-modal-form">
+        <div class="modal-body">
+          <div id="auth-fullname-group" class="input-group" style="display: none; margin-bottom: 1rem;">
+            <label class="input-label">Full Name</label>
+            <input type="text" id="auth-fullname" class="input-field" placeholder="Muhammad Ali">
+          </div>
+
+          <div class="input-group" style="margin-bottom: 1rem;">
+            <label class="input-label">Email Address</label>
+            <input type="email" id="auth-email" class="input-field" placeholder="name@domain.com" required>
+          </div>
+
+          <div class="input-group" style="margin-bottom: 1.5rem;">
+            <label class="input-label">Password</label>
+            <input type="password" id="auth-password" class="input-field" placeholder="••••••••" required>
+          </div>
+
+          <button type="button" id="toggle-auth-mode-btn" style="background:none; border:none; color:var(--accent-cyan); font-size:0.85rem; cursor:pointer;">
+            Don't have an account? Sign Up
+          </button>
+
+          <div style="margin-top: 1.25rem; padding: 0.85rem; background: rgba(255,255,255,0.04); border-radius: 8px; border: 1px dashed var(--border-color);">
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 700; text-transform: uppercase;">⚡ Quick Role Switcher:</div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button type="button" class="btn-secondary" style="font-size:0.75rem; padding:0.35rem 0.6rem;" onclick="App.quickLogin('superadmin@aeroflow.com', 'admin123')">👑 Super Admin</button>
+              <button type="button" class="btn-secondary" style="font-size:0.75rem; padding:0.35rem 0.6rem;" onclick="App.quickLogin('ops@aeroflow.com', 'ops123')">🛠 Ops Agent</button>
+              <button type="button" class="btn-secondary" style="font-size:0.75rem; padding:0.35rem 0.6rem;" onclick="App.quickLogin('customer@aeroflow.com', 'customer123')">✈️ Customer</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary modal-close-btn">Cancel</button>
+          <button type="submit" id="auth-submit-btn" class="btn-primary">Log In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Floating Policy AI Assistant Trigger -->
+  <button id="btn-toggle-policy-chat" class="floating-policy-trigger" title="Ask AI Policy Assistant">
+    <span>🤖</span>
+    <span>Ask Policy Bot</span>
+  </button>
+
+  <!-- AI Policy Chat Drawer -->
+  <div id="policy-chat-drawer" class="chat-drawer">
+    <div class="chat-header">
+      <div class="chat-header-title">
+        <span>🤖</span>
+        <span>AeroFlow Policy Bot</span>
+        <span class="brand-badge" style="font-size:0.6rem;">LangGraph RAG</span>
+      </div>
+      <button id="btn-close-chat-drawer" class="modal-close-btn">&times;</button>
+    </div>
+
+    <div id="chat-messages-container" class="chat-messages">
+      <div class="chat-msg msg-ai">
+        Hello! I am your AI flight policy specialist powered by LangGraph. Ask me about baggage allowances, ticket cancellations, or refund rules!
+      </div>
+      <!-- Quick Suggestion Chips -->
+      <div style="display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.5rem;">
+        <button class="route-chip chat-suggestion-chip">Are Economy tickets refundable?</button>
+        <button class="route-chip chat-suggestion-chip">What is the baggage limit for international flights?</button>
+      </div>
+    </div>
+
+    <form id="chat-input-form" class="chat-input-bar">
+      <input type="text" id="chat-input-text" class="chat-input" placeholder="Type policy question..." required autocomplete="off">
+      <button type="submit" class="chat-send-btn">➔</button>
+    </form>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/api.js"></script>
+  <script src="js/booking.js"></script>
+  <script src="js/waitlist.js"></script>
+  <script src="js/policy_chat.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Auto initial search on load -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        BookingController.performSearch();
+      }, 300);
+    });
+  </script>
+</body>
+</html>
