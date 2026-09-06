@@ -71,5 +71,6 @@ include = [
     "packages",
     "tests"
 ]
-reportMissingImports = "none"
+[tool.fastapi]
+entrypoint = "main:app"
 

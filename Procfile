@@ -1,1 +1,1 @@
-web: fastapi run main.py --port ${PORT:-8000}
+web: fastapi run main:app --port ${PORT:-8000}

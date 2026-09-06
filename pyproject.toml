@@ -23,4 +23,4 @@ dependencies = [
 ]
 
 [tool.fastapi]
-entrypoint = "main.py"
+entrypoint = "main:app"
